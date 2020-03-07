@@ -1,11 +1,11 @@
 package ui;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Scanner;
 
 import model.Bettor;
 import model.HorseRider;
+import model.Iqueue;
+import model.Pqueue;
 import model.Race;
 import threads.BetsThread;
 
@@ -27,12 +27,16 @@ public class Main {
 	public void menu() {
 		int option = 0;
 		while(option != -1) {
-			Queue<HorseRider> horses = race.getHorseRiders();
-			Queue<HorseRider> aux = new LinkedList<HorseRider>();
+			Iqueue<HorseRider> horses = race.getHorseRiders();
+			Iqueue<HorseRider> aux = new Pqueue<HorseRider>();
 			while(!horses.isEmpty()) {
-				HorseRider hr = horses.poll();
+				HorseRider hr = null;
+				try {
+					hr = horses.dequeue();
+				} catch (Exception e) {
+				}
 				System.out.println(hr.toString());
-				aux.offer(hr);
+				aux.enqueue(hr);
 			}
 			race.setHorseRiders(aux);
 			if(race.getHorseRiders().size() == 10) {
@@ -70,9 +74,9 @@ public class Main {
 			reader.nextLine();
 			switch(option) {
 			case 1:
-				System.out.println("Bettor name:");
-				String name = reader.nextLine();
-				boolean won = race.consultBet(name);
+				System.out.println("Bettor nit:");
+				String nit = reader.nextLine();
+				boolean won = race.consultBet(nit);
 				if(won) {
 					System.out.println("Congratulations!, your horse won the race");
 				} else {
@@ -124,14 +128,19 @@ public class Main {
 	}
 	
 	public void finishRace() {
+		race.setPositions();
 		System.out.println("Race finished!");
 		System.out.println("Podium");
 		String podium = "";
-		Queue<HorseRider> horses = race.getHorseRiders();
-		Queue<HorseRider> aux = new LinkedList<HorseRider>();
+		Iqueue<HorseRider> horses = race.getHorseRiders();
+		Iqueue<HorseRider> aux = new Pqueue<HorseRider>();
 		String theThree = "";
 		while(!horses.isEmpty()) {
-			HorseRider hr = horses.poll();
+			HorseRider hr = null;
+			try {
+				hr = horses.dequeue();
+			} catch (Exception e) {
+			}
 			if(hr.getPosition() == 1) {
 				podium = "1. " + hr.getHorseName() + "\n" + podium;
 			} else if(hr.getPosition() == 2) {
@@ -139,7 +148,7 @@ public class Main {
 			} else if(hr.getPosition() == 3) {
 				theThree = "3. " + hr.getHorseName();
 			}
-			aux.offer(hr);
+			aux.enqueue(hr);
 		}
 		race.setHorseRiders(aux);
 		podium += theThree;

@@ -53,7 +53,7 @@ public class HorseRider {
 		msg += "Horse " + getTrack() + ":"+"\n";
 		msg += "Horse rider name: " + getHorseRiderName()+"\n";
 		msg += "Horse name: " + getHorseName()+"\n";
-		msg += "Track: " + getTrack()+"\n";
+		msg += "Track: " + getTrack();
 		return msg;
 	}
 }
