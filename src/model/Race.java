@@ -1,17 +1,16 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Stack;
 
 public class Race {
 	
 	private Iqueue<HorseRider> horseRiders;
-	private LinkedList<Bettor> bettors;
+	private HashTable<Bettor> bettors;
 	
 	public Race() {
 		horseRiders = new Pqueue<HorseRider>();
-		bettors = new LinkedList<Bettor>();
+		bettors = new HashTable<Bettor>();
 	}
 
 	public Iqueue<HorseRider> getHorseRiders() {
@@ -22,11 +21,11 @@ public class Race {
 		this.horseRiders = horseRiders;
 	}
 
-	public LinkedList<Bettor> getBettors() {
+	public HashTable<Bettor> getBettors() {
 		return bettors;
 	}
 
-	public void setBettors(LinkedList<Bettor> bettors) {
+	public void setBettors(HashTable<Bettor> bettors) {
 		this.bettors = bettors;
 	}
 	
@@ -35,7 +34,7 @@ public class Race {
 	}
 	
 	public void addBettor(Bettor b) {
-		bettors.add(b);
+		bettors.insert(b, b.getNit());
 	}
 	
 	public void setPositions() {
@@ -71,15 +70,8 @@ public class Race {
 	}
 	
 	public boolean consultBet(String nit) {
-		Bettor b = null;
-		boolean finded = false;
-		for(int i = 0; i < bettors.size() && !finded; i++) {
-			if(bettors.get(i).getNit().equals(nit)) {
-				b = bettors.get(i);
-				finded = true;
-			}
-		}
-		if(!finded) {
+		Bettor b = bettors.search(nit);
+		if(b == null) {
 			return false;
 		}
 		String horseName = b.getHorse();
@@ -104,17 +96,46 @@ public class Race {
 	}
 	
 	public void rematch() {
+		bettors = new HashTable<Bettor>();
 		int last = horseRiders.size();
-		Iqueue<HorseRider> aux = new Pqueue<HorseRider>();
-		HorseRider[] hrs = new HorseRider[last];
-		while(!horseRiders.isEmpty()) {
-			HorseRider hr = null;
-			try {
-				hr = horseRiders.dequeue();
-			} catch (Exception e) {
+		int tracks = 1;
+		Stack<HorseRider> st = new Stack<HorseRider>();
+		Iqueue<HorseRider> queue = new Pqueue<HorseRider>();
+		boolean finished = false;
+		while(!finished) {
+			while(!horseRiders.isEmpty()) {
+				HorseRider hr = null;
+				try {
+					hr = horseRiders.dequeue();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				if(hr.getPosition() == last) {
+					queue.enqueue(hr);
+					hr.setTrack(tracks);
+					tracks++;
+					last--;
+				} else {
+					st.push(hr);
+				}
+			} if(!st.isEmpty()) {
+				while(!st.isEmpty()) {
+					HorseRider hr = st.pop();
+					if(hr.getPosition() == last) {
+						queue.enqueue(hr);
+						hr.setTrack(tracks);
+						tracks++;
+						last--;
+					} else {
+						horseRiders.enqueue(hr);
+					}
+				}
 			}
-			hrs[hr.getPosition()-1] = hr;
+			if(st.isEmpty() && horseRiders.isEmpty()) {
+				finished = true;
+			}
 		}
-		setHorseRiders(aux);
+		horseRiders = queue;
 	}
 }

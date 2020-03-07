@@ -35,7 +35,9 @@ public class Main {
 					hr = horses.dequeue();
 				} catch (Exception e) {
 				}
+				System.out.println("-----------------------------");
 				System.out.println(hr.toString());
+				System.out.println("-----------------------------");
 				aux.enqueue(hr);
 			}
 			race.setHorseRiders(aux);
@@ -66,6 +68,11 @@ public class Main {
 				}
 			}
 		}
+		raceFinished();
+	}
+	
+	public void raceFinished() {
+		int option = -1;
 		while(option != 0) {
 			System.out.println("0. Finish the race");
 			System.out.println("1. Consult bet");
@@ -85,6 +92,22 @@ public class Main {
 				break;
 			case 2:
 				race.rematch();
+				Iqueue<HorseRider> horses = race.getHorseRiders();
+				Iqueue<HorseRider> aux = new Pqueue<HorseRider>();
+				while(!horses.isEmpty()) {
+					HorseRider hr = null;
+					try {
+						hr = horses.dequeue();
+					} catch (Exception e) {
+					}
+					System.out.println("-----------------------------");
+					System.out.println(hr.toString());
+					System.out.println("-----------------------------");
+					aux.enqueue(hr);
+				}
+				race.setHorseRiders(aux);
+				openBets();
+				raceFinished();
 				option = 0;
 				break;
 			case 0:
