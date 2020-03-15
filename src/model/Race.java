@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 public class Race {
-	
+
 	private Iqueue<HorseRider> horseRiders;
 	private HashTable<Bettor> bettors;
-	
+
 	public Race() {
 		horseRiders = new Pqueue<HorseRider>();
 		bettors = new HashTable<Bettor>();
@@ -28,35 +28,35 @@ public class Race {
 	public void setBettors(HashTable<Bettor> bettors) {
 		this.bettors = bettors;
 	}
-	
+
 	public void addHorseRider(HorseRider hr) {
 		horseRiders.enqueue(hr);
 	}
-	
+
 	public void addBettor(Bettor b) {
 		bettors.insert(b, b.getNit());
 	}
-	
+
 	public void setPositions() {
 		Iqueue<HorseRider> aux = new Pqueue<HorseRider>();
 		int horses = horseRiders.size();
 		ArrayList<Integer> positions = new ArrayList<>();
-		while(!horseRiders.isEmpty()) {
+		while (!horseRiders.isEmpty()) {
 			HorseRider hr = null;
 			try {
 				hr = horseRiders.dequeue();
 			} catch (Exception e) {
-				
+
 			}
 			boolean used = false;
-			while(!used) {
-				int position = (int)(Math.random()*horses + 1);
-				for(int i = 0; i < positions.size() && !used; i++) {
-					if(positions.get(i) == position) {
+			while (!used) {
+				int position = (int) (Math.random() * horses + 1);
+				for (int i = 0; i < positions.size() && !used; i++) {
+					if (positions.get(i) == position) {
 						used = true;
 					}
 				}
-				if(used) {
+				if (used) {
 					used = false;
 				} else {
 					hr.setPosition(position);
@@ -68,24 +68,24 @@ public class Race {
 		}
 		setHorseRiders(aux);
 	}
-	
+
 	public boolean consultBet(String nit) {
 		Bettor b = bettors.search(nit);
-		if(b == null) {
+		if (b == null) {
 			return false;
 		}
 		String horseName = b.getHorse();
 		boolean won = false;
 		Iqueue<HorseRider> aux = new Pqueue<HorseRider>();
-		while(!horseRiders.isEmpty()) {
+		while (!horseRiders.isEmpty()) {
 			HorseRider hr = null;
 			try {
 				hr = horseRiders.dequeue();
 			} catch (Exception e) {
-				
+
 			}
-			if(hr.getHorseName().equals(horseName)) {
-				if(hr.getPosition() == 1) {
+			if (hr.getHorseName().equals(horseName)) {
+				if (hr.getPosition() == 1) {
 					won = true;
 				}
 			}
@@ -94,7 +94,7 @@ public class Race {
 		setHorseRiders(aux);
 		return won;
 	}
-	
+
 	public void rematch() {
 		bettors = new HashTable<Bettor>();
 		int last = horseRiders.size();
@@ -102,8 +102,8 @@ public class Race {
 		Stack<HorseRider> st = new Stack<HorseRider>();
 		Iqueue<HorseRider> queue = new Pqueue<HorseRider>();
 		boolean finished = false;
-		while(!finished) {
-			while(!horseRiders.isEmpty()) {
+		while (!finished) {
+			while (!horseRiders.isEmpty()) {
 				HorseRider hr = null;
 				try {
 					hr = horseRiders.dequeue();
@@ -111,7 +111,7 @@ public class Race {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if(hr.getPosition() == last) {
+				if (hr.getPosition() == last) {
 					queue.enqueue(hr);
 					hr.setTrack(tracks);
 					tracks++;
@@ -119,10 +119,11 @@ public class Race {
 				} else {
 					st.push(hr);
 				}
-			} if(!st.isEmpty()) {
-				while(!st.isEmpty()) {
+			}
+			if (!st.isEmpty()) {
+				while (!st.isEmpty()) {
 					HorseRider hr = st.pop();
-					if(hr.getPosition() == last) {
+					if (hr.getPosition() == last) {
 						queue.enqueue(hr);
 						hr.setTrack(tracks);
 						tracks++;
@@ -132,10 +133,23 @@ public class Race {
 					}
 				}
 			}
-			if(st.isEmpty() && horseRiders.isEmpty()) {
+			if (st.isEmpty() && horseRiders.isEmpty()) {
 				finished = true;
 			}
 		}
 		horseRiders = queue;
+	}
+
+	public String show() throws Exception {
+		String ms = "";
+
+		for (int i = 0; i < horseRiders.size(); i++) {
+			HorseRider h = horseRiders.dequeue();
+			ms += h.toString() + "\n";
+			addHorseRider(h);
+
+		}
+
+		return ms;
 	}
 }
