@@ -19,8 +19,6 @@ import threads.BetsThread;
 
 public class Main extends Application{
 	
-	private Scanner reader;
-	private Race race;
 	@Override
 	public void start(Stage primaryStage) {
 		try {
